@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Weather Outlook</title>
+</head>
+<body>
+    <header class="text-light bg-dark text-center" style="height: 45px">
+        <h3 class="pt-1">Weather Dashboard</32>
+    </header>
+    
+    <main class="container-fluid m-0 p-0">
+        <div class="col-12">
+            <div class="row">
+                <section class="col-4 col-sm-4 col-md-3 bg-light" style="height: 485px">
+                    <div class="col-12">
+                        <div class="row mt-2">
+                            <h6>Search for a City:</h6>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Los Angeles">
+                                <div class="input-group-append">
+                                  <button type="button" class="btn btn-outline-secondary bg-primary" id="#citySearch">B</button>
+                                </div>
+                              </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 bg-white border rounded-sm" id="#searchHistory">
+                        <!-- placeholder - limit: 8
+                        <div class="row border-bottom">
+                            <button class="btn my-1 ml-1">Los Angeles</button>
+                        </div> -->
+
+                    </div>
+
+                </section>
+
+                <section class="col-8 col-sm-8 col-md-9" style="height: 485px">
+                    <div class="col-12">
+                        <div class="row mt-3">
+                            <div class="col-12 border rounded-sm">
+                                <div class="row mt-3 ml-0 ml-md-2">
+                                    <h5 id="#cityName">Los Angeles</h5> &nbsp;&nbsp; <h5 id="#date">8/16/2020</h5> &nbsp;
+                                    <img src="https://openweathermap.org/img/wn/03d@2x.png"
+                                        class="position-relative" style="bottom: 13px"
+                                        alt="forecast" width="50" height="50">
+                                </div>
+
+                                <div class="row ml-0 ml-md-2">
+                                    <p>Temperature: </p> &nbsp; <p Id="#temperature">90.0</p> <p>° F</p>
+                                </div>
+
+                                <div class="row ml-0 ml-md-2">
+                                    <p>Humidity: </p> &nbsp; <p Id="#humidity">41</p> &nbsp; <p>%</p>
+                                </div>
+
+                                <div class="row ml-0 ml-md-2">
+                                    <p>Wind Speed: </p> &nbsp; <p Id="#windSpeed">4.7</p> &nbsp; <p>MPH</p>
+                                </div>
+
+                                <div class="row ml-0 ml-md-2">
+                                    <p class="py-1">UV Index: </p> &nbsp;
+                                    <p class="bg-danger px-2 py-1 border border-white rounded-sm" Id="#uvIndex">9.49</p>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="row mt-3" >
+                            <div class="col-12">
+                                <div class="row">
+                                    <h5>5-Day Forecast:</h5>
+                                </div>
+                            </div>
+                                 
+                            <div class="col-12" style="overflow-x: auto; white-space: nowrap;">
+                                <div class="row inline-block float-none flex-nowrap"
+                                    style="max-width: 770.25px; max-height: 182px" id="#forecast">
+                                    <!-- placeholder
+                                    <div class="mr-1 bg-primary border rounded-sm" style="min-width: 150px; height: 182px">
+                                        <div class="col-12 text-white">
+                                            <div class="row mt-2 p-2">
+                                                <h6>8/16/2020</h6>
+                                            </div>
+
+                                            <div class="row pl-2">
+                                                <img src="https://openweathermap.org/img/wn/03d@2x.png"
+                                                    alt="forecast" width="50" height="50">
+                                            </div>
+
+                                            <div class="row pl-2">
+                                                <p>Temp: 90.0° F</p>
+                                            </div>
+
+                                            <div class="row pl-2">
+                                                <p>Humidity: 41 %</p>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                    
+                                </div> 
+                            </div>
+                            
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
