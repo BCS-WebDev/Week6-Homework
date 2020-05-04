@@ -3,36 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <title>Weather Outlook</title>
 </head>
 <body>
+    <!-- header
+        - dark background, light text -->
     <header class="text-light bg-dark text-center" style="height: 45px">
+        <!-- title -->
         <h3 class="pt-1">Weather Dashboard</32>
     </header>
     
+    <!-- main container -->
     <main class="container-fluid m-0 p-0">
+        <!-- for responsiveness -->
         <div class="col-12">
+            <!-- outermost row -->
             <div class="row">
+                <!-- sidebar for search & search history -->
                 <section class="col-4 col-sm-4 col-md-3 bg-light" style="height: 485px">
+                    <!-- search -->
                     <div class="col-12">
+                        <!-- search prompt -->
                         <div class="row mt-2">
                             <h6>Search for a City:</h6>
                         </div>
 
+                        <!-- search function -->
                         <div class="row">
+                            <!-- input group -->
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="Los Angeles">
+                                <!-- input field -->
+                                <input type="text" class="form-control" id="#cityQuery" placeholder="Los Angeles">
+                                <!-- append to input field -->
                                 <div class="input-group-append">
-                                  <button type="button" class="btn btn-outline-secondary bg-primary" id="#citySearch">B</button>
+                                    <!-- search button -->
+                                  <button type="button" class="px-2 btn btn-outline-secondary bg-primary" id="#search">
+                                      <!-- search icon -->
+                                      <img src="Assets/searchIcon.png">
+                                  </button>
                                 </div>
                               </div>
                         </div>
                     </div>
 
+                    <!-- search history -->
                     <div class="col-12 bg-white border rounded-sm" id="#searchHistory">
-                        <!-- placeholder - limit: 8
+                        <!-- item example - button appended to row - limit: 8 
                         <div class="row border-bottom">
                             <button class="btn my-1 ml-1">Los Angeles</button>
                         </div> -->
@@ -41,50 +60,78 @@
 
                 </section>
 
+                <!-- main section for current and 5-day weather forecast -->
                 <section class="col-8 col-sm-8 col-md-9" style="height: 485px">
+                    <!-- for responsivess / top section -->
                     <div class="col-12">
+                        <!-- current forecast outersmost row -->
                         <div class="row mt-3">
+                            <!-- for responsiveness & border -->
                             <div class="col-12 border rounded-sm">
+                                <!-- display current city/weather info from json object -->
                                 <div class="row mt-3 ml-0 ml-md-2">
-                                    <h5 id="#cityName">Los Angeles</h5> &nbsp;&nbsp; <h5 id="#date">8/16/2020</h5> &nbsp;
-                                    <img src="https://openweathermap.org/img/wn/03d@2x.png"
+                                    <!-- city name - Los Angeles, current date - 8/16/2020 -->
+                                    <h5 id="#cityName"></h5> &nbsp;&nbsp; <h5 id="#date"></h5> &nbsp;
+                                    <!-- current forecast icon
+                                        - icon code is returned in json object
+                                        - src="https://openweathermap.org/img/wn/03d@2x.png
+                                            - icon code here is "03d" -->
+                                    <img src="" id="#weatherIcon"
                                         class="position-relative" style="bottom: 13px"
                                         alt="forecast" width="50" height="50">
                                 </div>
 
+                                <!-- current termperature
+                                    - 90.0 -->
                                 <div class="row ml-0 ml-md-2">
-                                    <p>Temperature: </p> &nbsp; <p Id="#temperature">90.0</p> <p>° F</p>
+                                    <p>Temperature: </p> &nbsp; <p Id="#temperature"></p> <p>° F</p>
                                 </div>
 
+                                <!-- current humidity
+                                    - 41 -->
                                 <div class="row ml-0 ml-md-2">
-                                    <p>Humidity: </p> &nbsp; <p Id="#humidity">41</p> &nbsp; <p>%</p>
+                                    <p>Humidity: </p> &nbsp; <p Id="#humidity"></p> &nbsp; <p>%</p>
                                 </div>
 
+                                <!-- current wind speed
+                                    4.7 -->
                                 <div class="row ml-0 ml-md-2">
-                                    <p>Wind Speed: </p> &nbsp; <p Id="#windSpeed">4.7</p> &nbsp; <p>MPH</p>
+                                    <p>Wind Speed: </p> &nbsp; <p Id="#windSpeed"></p> &nbsp; <p>MPH</p>
                                 </div>
 
+                                <!-- current uv index -->
                                 <div class="row ml-0 ml-md-2">
                                     <p class="py-1">UV Index: </p> &nbsp;
-                                    <p class="bg-danger px-2 py-1 border border-white rounded-sm" Id="#uvIndex">9.49</p>
+                                    <!-- favorable - green, moderate - orange, severe - red
+                                        - 9.49 -->
+                                    <p class="bg-danger px-2 py-1 border border-white rounded-sm" Id="#uvIndex"></p>
                                 </div>
                             </div>
                             
                         </div>
                     </div>
 
+                    <!-- for responsiveness / bottom section -->
                     <div class="col-12">
+                        <!-- outermost row -->
                         <div class="row mt-3" >
+                            <!-- for responsiveness -->
                             <div class="col-12">
+                                <!-- new row for title -->
                                 <div class="row">
                                     <h5>5-Day Forecast:</h5>
                                 </div>
                             </div>
                                  
+                            <!-- for responsive 5 day forecast
+                                - overflow-x, white-space, float-none, flex-nowrap
+                                    - needed for horizontal scroll on widths smaller than 1067px -->
                             <div class="col-12" style="overflow-x: auto; white-space: nowrap;">
                                 <div class="row inline-block float-none flex-nowrap"
                                     style="max-width: 770.25px; max-height: 182px" id="#forecast">
-                                    <!-- placeholder
+                                    <!-- item example
+                                        - weather card for the day
+                                        - divided into rows for date, weather icon, temperature, humidity
                                     <div class="mr-1 bg-primary border rounded-sm" style="min-width: 150px; height: 182px">
                                         <div class="col-12 text-white">
                                             <div class="row mt-2 p-2">
@@ -111,8 +158,10 @@
                             
                         </div>
                     </div>
+
                 </section>
             </div>
+
         </div>
     </main>
 
