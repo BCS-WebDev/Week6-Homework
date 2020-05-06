@@ -3,23 +3,49 @@
 
 // on dom load
 $(document).ready(function() {
+    $("#cityQuery").on({
+        "click" : function(event) {
+            event.preventDefault();
+            $("#cityQuery").css("color", "black");
+        },
+        "keydown" : function(event) {
+            $("#cityQuery").css("color", "black");
+            
+            if (event.originalEvent.key == "Enter") {
+                initiateSearch();
+            }
+        }
+    });
+
     // TODO - implement auto-complete search
 
     // get search button
+    function initiateSearch(event) {
+        cityQuery = $("#cityQuery").val();  // get value from input
+        cityQuery.trim();     // trim spaces on either side
+        cityQuery.replace(/ /g, "+");  // replace inner spaces with '+' - global
+       
+        cityLocationSearch();
+    }
+
     var searchButton = $("#searchButton");
     searchButton.on("click", function(event) {
+        event.preventDefault();
         if (event.target.matches("button") || event.target.matches("img")) {
-            cityQuery = $("#cityQuery").val();  // get value from input
-            cityQuery.trim();     // trim spaces on either side
-            cityQuery.replace(/ /g, "+");  // replace inner spaces with '+' - global
+            initiateSearch();
         }
-
-        cityLocationSearch();
     });
+    
+    function invalidateCoords() {
+        var errorMessage = "City not found."
+        $("#cityQuery").css("color", "red").val(errorMessage);  // text in red
+        coordsValid = false;
+    }
 
     // get location via City Geo-Location Lookup API (latitude, longitude)
+    var coordsValid = true;
     var cityQuery = "";
-    var currentCity = "";
+    var currentCity = "Los Angeles, CA";
     function cityLocationSearch() {
         $.ajax({
             "async": true,
@@ -31,42 +57,62 @@ $(document).ready(function() {
                 "x-rapidapi-key": "d22c1ef6ddmshc7c20de1815c23cp1cc60ejsnd4912e537f70"  // api key
             }
         }).then(function(response) {
+            // console.log(response);
             if (response.Results.length > 0) {
-                latitude = response.Results[0].lat;
-                longitude = response.Results[0].lon;
+                for (var i = 0; i < response.Results.length; i++) {
+                    latitude = response.Results[0].lat;
+                    longitude = response.Results[0].lon;
 
-                if (searchHistory.length >= 8) { searchHistory.pop(); }
-                currentCity = response.Results[0].name;
-                addCity(currentCity);   
-                searchHistory.unshift(currentCity);
-                localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+                    if (Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180) {
+                        currentCity = response.Results[0].name;
+                        break;
+                    }
+                }
+
+                if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) {
+                    invalidateCoords();
+                    return;
+                }
+                
+                if (!searchHistory.includes(currentCity)) {
+                    if (searchHistory.length >= 8) {
+                        searchHistory.pop();
+                        $("#searchHistory div").last()[0].remove();
+                    }
+                    addCity(currentCity);   
+                    searchHistory.unshift(currentCity);
+                    localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+                }
 
                 $("#cityQuery").val("");  // clear search
             } else {
-                var errorMessage = "City not found."
-                errorMessage.fontcolor("red");
-                $("#cityQuery").val(errorMessage);  // text in red
-
+                invalidateCoords();
                 return;
             }
-        }).then(cityWeatherSearch);
+        }).then(function() {      // no function to stop ajax chain in ES6 - uncancellable by default
+            if (coordsValid) { cityWeatherSearch(); }
+            else { coordsValid = true; }
+        });
     }
 
     // one call api (current, daily 8 day forecast, exclude hourly)
-    var latitude = 0;
-    var longitude = 0;
+    var latitude = 34.052235;
+    var longitude = -118.243683;
     var apiKey = "0d1a6b20e92136b4c5b57e307c6cf907"; // api key
     function cityWeatherSearch() {
         $.ajax({
             url: "https://api.openweathermap.org/data/2.5/onecall?lat=" + latitude + "&lon=" + longitude +
                     "&units=imperial&exclude=hourly&appid=" + apiKey,
             method: "GET"
-        }).then(fillWeatherForecast(response));
+        }).then(function(response) {
+            // console.log(response);
+            fillWeatherForecast(response);
+        });
     }
 
     function fillWeatherForecast(response) {
         // fill current weather
-        $("#cityName") = currentCity;
+        $("#cityName").text(currentCity);
         $("#date").text(moment().format('M/D/YYYY'));   // use moment.js - 8/16/2020
 
         var weatherIconCode = response.current.weather[0].icon;
@@ -88,10 +134,11 @@ $(document).ready(function() {
         } else if (currentUVI >= 8 && currentUVI < 10) {
             uvIndex.css("background-color", "red");
         } else if (currentUVI >= 10) {
-            uvIndex.css("background-color", "purple");
+            uvIndex.css("background-color", "fuchsia");
         }
 
         // fill 5-day forecast
+        $("#forecast").empty();
         var forecast = response.daily;
         for (var i = 0; i < 5; i++) {
             var forecastCard = $("<div>").addClass("mr-1 bg-primary border rounded-sm");
@@ -107,19 +154,17 @@ $(document).ready(function() {
             var iconRow = $("<div>").addClass("row pl-2");
             var icon = $("<img>");
             icon.attr("alt", "forecast");
-            icon.attr("src", "https://openweathermap.org/img/wn/" + forecast[i].weather[0].icon + "@2x.png").load(
-                function() {
-                    this.width(50);
-                    this.height(50);
-            });
+            icon.attr("src", "https://openweathermap.org/img/wn/" + forecast[i].weather[0].icon + "@2x.png");
+            icon.width(50);
+            icon.height(50);
             iconRow.append(icon);
             
             var tempRow = $("<div>").addClass("row pl-2");
-            var temp = $("<p>").text("Temp: " + forecast[i].weather[0].temp.day + "° F");
+            var temp = $("<p>").text("Temp: " + forecast[i].temp.day + "° F");
             tempRow.append(temp);
         
             var humidityRow = $("<div>").addClass("row pl-2");
-            var humidity = $("<p>").text("Humidity: " + forecast[i].weather[0].humidity + " %");
+            var humidity = $("<p>").text("Humidity: " + forecast[i].humidity + " %");
             humidityRow.append(humidity);
        
             column.append(dateRow);
@@ -130,6 +175,21 @@ $(document).ready(function() {
             $("#forecast").append(forecastCard);
         }
     }
+
+    // search history on click
+    $("#searchHistory").on("click", function(event) {
+        event.preventDefault();
+        if (event.target.matches("button")) {
+            cityQuery = event.target.textContent;
+        } else if (event.target.matches("div")) {
+            cityQuery = event.target.firstChild.textContent;
+        }
+
+        cityQuery.trim();     // trim spaces on either side
+        cityQuery.replace(/ /g, "+");  // replace inner spaces with '+' - global
+
+        cityLocationSearch();
+    });
 
     function addCity(newCity) {
         var cityToAdd = $("<div>");
@@ -143,7 +203,7 @@ $(document).ready(function() {
         buttonToAdd.text(newCity);
         
         cityToAdd.append(buttonToAdd);
-        $("#searchHistory").append(cityToAdd);        
+        $("#searchHistory").prepend(cityToAdd);        
     }
 
     var searchHistory = [];
@@ -152,26 +212,28 @@ $(document).ready(function() {
         if (tempHistory == null) { return; }
 
         searchHistory = tempHistory;
-        for (var i = 0; i < searchHistory.length; i++) {
+        for (var i = searchHistory.length - 1; i >= 0; i--) {
             addCity(searchHistory[i]);
         }
     }
 
     // Main
-    function positionSuccess(positionObject) {
+    function allowPosition(positionObject) {
         latitude = positionObject.coords.latitude;
         longitude = positionObject.coords.longitude;
+        currentCity = "Current Location";
+
+        cityWeatherSearch();  // fill weather forecast current user location
+    }
+
+    function blockPosition(positionObject) {
+        return;
     }
 
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(positionSuccess);
-        currentCity = "Current Location";
-    } else {
-        latitude = 34.052235;
-        longitude = -118.243683;
-        currentCity = "Los Angeles, CA"
+        navigator.geolocation.getCurrentPosition(allowPosition, blockPosition);
     }
 
-    // cityWeatherSearch();  // fill weather forecast of default or current user location
-    // fillSearchHistory();  // fill search history
+    cityWeatherSearch();  // fill weather forecast of default or current user location
+    fillSearchHistory();  // fill search history
 });
