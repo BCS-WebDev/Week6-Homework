@@ -6,6 +6,14 @@
     <!-- bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <!-- moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <!-- custom script -->
+    <script src="Develop/script.js"></script>
+
+    <!-- webpage title -->
     <title>Weather Outlook</title>
 </head>
 <body>
@@ -36,11 +44,11 @@
                             <!-- input group -->
                             <div class="input-group mb-3">
                                 <!-- input field -->
-                                <input type="text" class="form-control" id="#cityQuery" placeholder="Los Angeles">
+                                <input type="text" class="form-control" id="cityQuery">
                                 <!-- append to input field -->
-                                <div class="input-group-append">
+                                <div class="input-group-append" id="searchButton">
                                     <!-- search button -->
-                                  <button type="button" class="px-2 btn btn-outline-secondary bg-primary" id="#search">
+                                  <button type="button" class="px-2 btn btn-outline-secondary bg-primary">
                                       <!-- search icon -->
                                       <img src="Assets/searchIcon.png">
                                   </button>
@@ -50,7 +58,7 @@
                     </div>
 
                     <!-- search history -->
-                    <div class="col-12 bg-white border rounded-sm" id="#searchHistory">
+                    <div class="col-12 bg-white border rounded-sm" id="searchHistory">
                         <!-- item example - button appended to row - limit: 8 
                         <div class="row border-bottom">
                             <button class="btn my-1 ml-1">Los Angeles</button>
@@ -71,12 +79,12 @@
                                 <!-- display current city/weather info from json object -->
                                 <div class="row mt-3 ml-0 ml-md-2">
                                     <!-- city name - Los Angeles, current date - 8/16/2020 -->
-                                    <h5 id="#cityName"></h5> &nbsp;&nbsp; <h5 id="#date"></h5> &nbsp;
+                                    <h5 id="cityName"></h5> &nbsp;&nbsp; <h5 id="date"></h5> &nbsp;
                                     <!-- current forecast icon
                                         - icon code is returned in json object
                                         - src="https://openweathermap.org/img/wn/03d@2x.png
                                             - icon code here is "03d" -->
-                                    <img src="" id="#weatherIcon"
+                                    <img src="" id="weatherIcon"
                                         class="position-relative" style="bottom: 13px"
                                         alt="forecast" width="50" height="50">
                                 </div>
@@ -84,27 +92,33 @@
                                 <!-- current termperature
                                     - 90.0 -->
                                 <div class="row ml-0 ml-md-2">
-                                    <p>Temperature: </p> &nbsp; <p Id="#temperature"></p> <p>° F</p>
+                                    <p>Temperature: </p> &nbsp; <p Id="temperature"></p> <p>° F</p>
                                 </div>
 
                                 <!-- current humidity
                                     - 41 -->
                                 <div class="row ml-0 ml-md-2">
-                                    <p>Humidity: </p> &nbsp; <p Id="#humidity"></p> &nbsp; <p>%</p>
+                                    <p>Humidity: </p> &nbsp; <p Id="humidity"></p> &nbsp; <p>%</p>
                                 </div>
 
                                 <!-- current wind speed
                                     4.7 -->
                                 <div class="row ml-0 ml-md-2">
-                                    <p>Wind Speed: </p> &nbsp; <p Id="#windSpeed"></p> &nbsp; <p>MPH</p>
+                                    <p>Wind Speed: </p> &nbsp; <p Id="windSpeed"></p> &nbsp; <p>MPH</p>
                                 </div>
 
                                 <!-- current uv index -->
                                 <div class="row ml-0 ml-md-2">
                                     <p class="py-1">UV Index: </p> &nbsp;
-                                    <!-- favorable - green, moderate - orange, severe - red
+                                    <!-- uv index conditions 
+                                        - favorable - green - (0-3)
+                                        - moderate - yellow - (3-6)
+                                        - high - orange - (6-8)
+                                        - severe - red - (8-10)
+                                        - extreme - purple - (10+)
                                         - 9.49 -->
-                                    <p class="bg-danger px-2 py-1 border border-white rounded-sm" Id="#uvIndex"></p>
+                                    <p class="px-2 py-1 text-light border border-white rounded-sm"
+                                        style="background-color: white" Id="uvIndex"></p>
                                 </div>
                             </div>
                             
@@ -128,7 +142,7 @@
                                     - needed for horizontal scroll on widths smaller than 1067px -->
                             <div class="col-12" style="overflow-x: auto; white-space: nowrap;">
                                 <div class="row inline-block float-none flex-nowrap"
-                                    style="max-width: 770.25px; max-height: 182px" id="#forecast">
+                                    style="max-width: 770.25px; max-height: 182px" id="forecast">
                                     <!-- item example
                                         - weather card for the day
                                         - divided into rows for date, weather icon, temperature, humidity
