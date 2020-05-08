@@ -31,7 +31,7 @@
             <!-- outermost row -->
             <div class="row">
                 <!-- sidebar for search & search history -->
-                <section class="col-4 col-sm-4 col-md-3 bg-light" style="height: 485px">
+                <section class="col-4 bg-light" style="height: auto">
                     <!-- search -->
                     <div class="col-12">
                         <!-- search prompt -->
@@ -45,6 +45,18 @@
                             <div class="input-group mb-3">
                                 <!-- input field -->
                                 <input type="text" class="form-control" placeholder="Los Angeles" id="cityQuery">
+                               
+                                <!-- auto-complete -->
+                                <div class="list-group border border-top-0 border-secondary rounded position-absolute"
+                                    id="autoComplete" style="z-index: 1; width: 247px; top: 37px; display: none">
+                                    <!-- item example 
+                                        - append results as buttons to list group
+                                        - clicking button starts search for that result
+                                    <button type="button" class="px-3 py-2 rounded-0 list-group-item list-group-item-action">
+                                        Los Angeles, California
+                                    </button> -->
+                                </div> 
+
                                 <!-- append to input field -->
                                 <div class="input-group-append" id="searchButton">
                                     <!-- search button -->
@@ -53,7 +65,7 @@
                                       <img src="Assets/searchIcon.png">
                                   </button>
                                 </div>
-                              </div>
+                            </div>
                         </div>
                     </div>
 
@@ -69,7 +81,7 @@
                 </section>
 
                 <!-- main section for current and 5-day weather forecast -->
-                <section class="col-8 col-sm-8 col-md-9" style="height: 485px">
+                <section class="col-8" style="height: 485px">
                     <!-- for responsivess / top section -->
                     <div class="col-12">
                         <!-- current forecast outersmost row -->

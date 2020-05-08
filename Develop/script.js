@@ -10,21 +10,71 @@ $(document).ready(function() {
         "keydown" : function(event) {   // on keypress
             $("#cityQuery").css("color", "black");     // change text to black
             
+            clearTimeout(searchTimer);
+            var searchTimer = setTimeout(
+                function() {
+                    autoComplete();
+                },
+                1000   // 1000 milliseconds (1 second)
+            );   
+
             if (event.originalEvent.key == "Enter") {  // if key is enter
+                cityQuery = $("#cityQuery").val();  // get value from city search input field
                 initiateSearch();   // initiate search for city
             }
         }
     });
 
-    // TODO - implement auto-complete search
-    // TODO - check for one call api error codes
+    // auto-complete search
+    function autoComplete() {
+        cityQuery = $("#cityQuery").val();  // get value from city search input field
+        $.ajax({     // ajax call for city lookup
+            "async": true,      // city lookup api parameters
+            "crossDomain": true,
+            "url": "https://devru-latitude-longitude-find-v1.p.rapidapi.com/latlon.php?location=" + cityQuery,
+            "method": "GET",
+            "headers": {
+                "x-rapidapi-host": "devru-latitude-longitude-find-v1.p.rapidapi.com",
+                "x-rapidapi-key": "d22c1ef6ddmshc7c20de1815c23cp1cc60ejsnd4912e537f70"  // api key
+            }
+        }).then(function(response) {    // ajax request for cities
+            var cityResults = response.Results;    // get results
+            if (cityResults.length > 0) {    // if results array not empty
+                resetAutoComplete();    // reset auto-complete
+                for (var i = 0; i < cityResults.length; i++) {  // for all results
+                    var citySuggestion = cityResults[i].name;     // get city name or coordinates
+                    var newSuggestion = $("<button>").addClass("px-3 py-2 rounded-0 list-group-item list-group-item-action");
+                    newSuggestion.text(citySuggestion);  // add class & text content
+                    newSuggestion.type = "button";    // change type for css
+
+                    $("#autoComplete").append(newSuggestion);    // append to autocomplete
+
+                    if (i == 7) { break; }  // break loop after 8 suggestions
+                }
+
+                $("#autoComplete").css("display", "block");    // display auto-complete
+            }
+        });
+    }
+    
+    function resetAutoComplete() {    // reset auto-complete list group
+        $("#autoComplete").empty();  // empty auto-complete
+        $("#autoComplete").css("display", "none");    // list group display none 
+    }
+
+    $("#autoComplete").on("click", function(event) {   // on click auto-complete city suggestion button
+        if (event.target.matches("button")) {      // if button
+            cityQuery = event.target.textContent;  // get city result name
+            initiateSearch();   // initiate search for city
+        }
+    });
 
     // initiate query
-    function initiateSearch(event) {
-        cityQuery = $("#cityQuery").val();  // get value from city search input field
+    function initiateSearch() {
         cityQuery.trim();     // trim spaces on either side
         cityQuery.replace(/ /g, "+");  // replace inner spaces with '+' - global
-       
+
+        resetAutoComplete();   // reset auto-complete
         cityLocationSearch();    // search possible cities for coordinates
     }
 
@@ -33,6 +83,7 @@ $(document).ready(function() {
     searchButton.on("click", function(event) {   // on click
         event.preventDefault();    // prevent default
         if (event.target.matches("button") || event.target.matches("img")) {   // if search button or img icon
+            cityQuery = $("#cityQuery").val();  // get value from city search input field
             initiateSearch();   // initiate search for city
         }
     });
@@ -44,14 +95,14 @@ $(document).ready(function() {
         coordsValid = false;    // set coordsvalid to false to cut ajax chain
     }
 
-    // get coordiantes via City Geo-Location Lookup API (latitude, longitude)
-    var coordsValid = true;   // boolean for flow control
+    // get coordinates via City Geo-Location Lookup API (latitude, longitude)
+    var coordsValid = true;   // boolean for gate control
     var cityQuery = "";       // city search input
     var currentCity = "Los Angeles, CA";    // variable name to be added - default location is los angeles
 
     function cityLocationSearch() {    // city search via name for coordinates
-        $.ajax({      // ajax call for city lookup
-            "async": true,
+        $.ajax({     // ajax call for city lookup
+            "async": true,      // city lookup api parameters
             "crossDomain": true,
             "url": "https://devru-latitude-longitude-find-v1.p.rapidapi.com/latlon.php?location=" + cityQuery,
             "method": "GET",
@@ -60,14 +111,15 @@ $(document).ready(function() {
                 "x-rapidapi-key": "d22c1ef6ddmshc7c20de1815c23cp1cc60ejsnd4912e537f70"  // api key
             }
         }).then(function(response) {   
-            // console.log(response);
-            if (response.Results.length > 0) {    // if results array not empty
-                for (var i = 0; i < response.Results.length; i++) {  // for all results
-                    latitude = response.Results[0].lat;    // get city latitude
-                    longitude = response.Results[0].lon;    // get city longitude
+            // find first valid coordinates
+            var cityResults = response.Results;
+            if (cityResults.length > 0) {    // if results array not empty
+                for (var i = 0; i < cityResults.length; i++) {  // for all results
+                    latitude = cityResults[i].lat;    // get city latitude
+                    longitude = cityResults[i].lon;    // get city longitude
 
                     if (Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180) {    // if coordinates valid
-                        currentCity = response.Results[0].name;     // get city name or coordinates
+                        currentCity = cityResults[i].name;     // get city name or coordinates
                         break;   // break loop
                     }
                 }
@@ -108,9 +160,12 @@ $(document).ready(function() {
         $.ajax({
             url: "https://api.openweathermap.org/data/2.5/onecall?lat=" + latitude + "&lon=" + longitude +
                     "&units=imperial&exclude=hourly&appid=" + apiKey,  // imperial units, exclude hourly
-            method: "GET"
+            method: "GET",
+            error: function(response, status, error) {   // error handler - stops ajax chain
+                var errorMessage = status + " " + response.status + ": " + error;  // change city search input field value to error
+                $("#cityQuery").css("color", "red").val(errorMessage);    // change text color to red
+            }
         }).then(function(response) {
-            // console.log(response);
             fillWeatherForecast(response);   // fill weather forecast with response
         });
     }
@@ -190,10 +245,7 @@ $(document).ready(function() {
             cityQuery = event.target.firstChild.textContent;
         }
 
-        cityQuery.trim();      // trim spaces on either side
-        cityQuery.replace(/ /g, "+");    // replace inner spaces with '+' - global
-
-        cityLocationSearch();    // search city for coordinates
+        initiateSearch();   // initiate search
     });
 
     // add city to search history
@@ -224,7 +276,7 @@ $(document).ready(function() {
     }
 
     // user location search allowed
-    function allowPosition(positionObject) {  // callback success
+    function allowPosition(positionObject) {  // callback success for geolocation.getCurrentPosition
         latitude = positionObject.coords.latitude;  // get latitude
         longitude = positionObject.coords.longitude;  // get longitude
         currentCity = "Current Location";   // no reverse geo-coding to find city name - set to 'current location'
@@ -233,15 +285,27 @@ $(document).ready(function() {
     }
 
     // user location search blocked
-    function blockPosition(positionObject) {  // callback failure
+    function blockPosition(positionObject) {  // callback failure for geolocation.getCurrentPosition
         return;   // to wait for user permission to get location & change weather forecast
     }
 
-    // Main
-    if (navigator.geolocation) {   // get location permission
-        navigator.geolocation.getCurrentPosition(allowPosition, blockPosition);  // waits for user but will run functions below
+    // main function
+    function main() {
+        if (navigator.geolocation) {   // get location permission
+            navigator.geolocation.getCurrentPosition(allowPosition, blockPosition);  // waits for user permission
+        }
+
+        // while waiting for user permission
+        fillSearchHistory();  // fill search history
+
+        if (searchHistory.length > 0) {    // if search history not empty
+            cityQuery = searchHistory[0];   // get last searched city
+            initiateSearch();    // fill initial weather info based on last stored city name
+        } else {
+            cityWeatherSearch();  // fill weather forecast with default location - los angeles
+        }
     }
 
-    cityWeatherSearch();  // fill weather forecast with default location - los angeles
-    fillSearchHistory();  // fill search history
+    // call main
+    main();
 });
