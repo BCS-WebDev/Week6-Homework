@@ -10,10 +10,10 @@ $(document).ready(function() {
         "keydown" : function(event) {   // on keypress
             $("#cityQuery").css("color", "black");     // change text to black
             
-            clearTimeout(searchTimer);
-            var searchTimer = setTimeout(
+            clearTimeout(searchTimer);    // clear previous timeout, if any
+            var searchTimer = setTimeout(   // set timeout
                 function() {
-                    autoComplete();
+                    autoComplete();    // call autocomplete
                 },
                 1000   // 1000 milliseconds (1 second)
             );   
