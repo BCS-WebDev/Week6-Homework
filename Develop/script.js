@@ -2,6 +2,7 @@
 // on dom load
 $(document).ready(function() {
     // city search input field
+    var searchTimer;   // global timer to clear timeout
     $("#cityQuery").on({
         "click" : function(event) {    // on click
             event.preventDefault();     // prevent default
@@ -11,11 +12,15 @@ $(document).ready(function() {
             $("#cityQuery").css("color", "black");     // change text to black
             
             clearTimeout(searchTimer);    // clear previous timeout, if any
-            var searchTimer = setTimeout(   // set timeout
+            searchTimer = setTimeout(   // set timeout
                 function() {
-                    autoComplete();    // call autocomplete
+                    if ($("#cityQuery").val().length > 0) {
+                        autoComplete();    // call autocomplete
+                    } else {
+                        resetAutoComplete();    // reset auto-complete
+                    }
                 },
-                1000   // 1000 milliseconds (1 second)
+                500   // 500 milliseconds (.5 seconds)
             );   
 
             if (event.originalEvent.key == "Enter") {  // if key is enter
@@ -36,20 +41,31 @@ $(document).ready(function() {
             "headers": {
                 "x-rapidapi-host": "devru-latitude-longitude-find-v1.p.rapidapi.com",
                 "x-rapidapi-key": "d22c1ef6ddmshc7c20de1815c23cp1cc60ejsnd4912e537f70"  // api key
+            },
+            error: function(response, status, error) {   // error handler - stops ajax chain (when API goes down)
+                var errorMessage = status + " " + response.status + ": " + error;  // change city search input field value to error
+                $("#cityQuery").css("color", "red").val(errorMessage);    // change text color to red
             }
         }).then(function(response) {    // ajax request for cities
+            console.log(response);
             var cityResults = response.Results;    // get results
             if (cityResults.length > 0) {    // if results array not empty
                 resetAutoComplete();    // reset auto-complete
                 for (var i = 0; i < cityResults.length; i++) {  // for all results
-                    var citySuggestion = cityResults[i].name;     // get city name or coordinates
-                    var newSuggestion = $("<button>").addClass("px-3 py-2 rounded-0 list-group-item list-group-item-action");
-                    newSuggestion.text(citySuggestion);  // add class & text content
-                    newSuggestion.type = "button";    // change type for css
+                    if (cityResults[i].type == "city") {
+                        var citySuggestion = cityResults[i].name;     // get city name or coordinates
+                        if (citySuggestion.includes("null")) {    // locality generalization can be (null)
+                            citySuggestion = citySuggestion.slice(0, citySuggestion.indexOf(","));   // slice at ','
+                        }
 
-                    $("#autoComplete").append(newSuggestion);    // append to autocomplete
+                        var newSuggestion = $("<button>").addClass("px-3 py-2 rounded-0 list-group-item list-group-item-action");
+                        newSuggestion.text(citySuggestion);  // add class & text content
+                        newSuggestion.type = "button";    // change type for css
 
-                    if (i == 7) { break; }  // break loop after 8 suggestions
+                        $("#autoComplete").append(newSuggestion);    // append to autocomplete
+
+                        if (i == 7) { break; }  // break loop after 8 suggestions
+                    }
                 }
 
                 $("#autoComplete").css("display", "block");    // display auto-complete
@@ -109,6 +125,10 @@ $(document).ready(function() {
             "headers": {
                 "x-rapidapi-host": "devru-latitude-longitude-find-v1.p.rapidapi.com",
                 "x-rapidapi-key": "d22c1ef6ddmshc7c20de1815c23cp1cc60ejsnd4912e537f70"  // api key
+            },
+            error: function(response, status, error) {   // error handler - stops ajax chain
+                var errorMessage = status + " " + response.status + ": " + error;  // change city search input field value to error
+                $("#cityQuery").css("color", "red").val(errorMessage);    // change text color to red
             }
         }).then(function(response) {   
             // find first valid coordinates
@@ -186,9 +206,9 @@ $(document).ready(function() {
         var currentUVI = response.current.uvi;    // get current uvi
         uvIndex.text(currentUVI);    // set current uvi
         if (currentUVI < 3) {       // if uvi < 3
-            uvIndex.css("background-color", "green");    // uvi container - green
+            uvIndex.css("background-color", "lightgreen");    // uvi container - lightgreen
         } else if (currentUVI >= 3 && currentUVI < 6) {   // if 3 <= uvi < 6
-            uvIndex.css("background-color", "yellow");   // uvi container - yellow
+            uvIndex.css("background-color", "gold");   // uvi container - gold
         } else if (currentUVI >= 6 && currentUVI < 8) {   // if 6 <= uvi < 8
             uvIndex.css("background-color", "orange");   // uvi container - orange
         } else if (currentUVI >= 8 && currentUVI < 10) {   // if 8 <= uvi < 10
@@ -253,6 +273,10 @@ $(document).ready(function() {
         var cityToAdd = $("<div>").addClass("row");  // create div & add row class
         if (searchHistory.length > 0) {   // if not adding first child
             cityToAdd.addClass("border-bottom"); // add bottom border
+        }
+
+        if (newCity.includes("null")) {     // if locality generalization is (null)
+            newCity.slice(0, newCity.indexOf(","));  // slice at ',' 
         }
 
         var buttonToAdd = $("<button>").addClass("btn my-1 ml-1");   // create button & add classes 
