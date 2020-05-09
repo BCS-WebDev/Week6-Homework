@@ -1,5 +1,5 @@
 
-// on dom load
+// on DOM load
 $(document).ready(function() {
     // city search input field
     var searchTimer;   // global timer to clear timeout
@@ -47,7 +47,6 @@ $(document).ready(function() {
                 $("#cityQuery").css("color", "red").val(errorMessage);    // change text color to red
             }
         }).then(function(response) {    // ajax request for cities
-            console.log(response);
             var cityResults = response.Results;    // get results
             if (cityResults.length > 0) {    // if results array not empty
                 resetAutoComplete();    // reset auto-complete
