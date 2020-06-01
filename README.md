@@ -1,7 +1,7 @@
-# Week6-Homework
+# Weather Forecast
 BootCampSpot Web Development - Week 6 Homework
 
-# Notes on Weather Forecast & APIs
+## Notes on Weather Forecast & APIs
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Weather forecasts predict the weather with
 some accuracy for the coming two weeks or more. Generally reliable, forecasts are
 used by people if they are planning for travel or other outings. People usually
@@ -18,7 +18,7 @@ There are several apis on their website that range from getting info about curre
 5-day three hour, 48-hourly, 16-daily, weather maps, and more. The majority of apis
 either have a limit, price per request, or a monthly plan. 
 
-# Motive & Action
+## Motive & Action
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For our case, we will be using free apis with
 as much functionality as we can get. For our weather forecasts, we will be using the
 One Call API from openweathermap as it provides ways to gather current, 48 hourly,
