@@ -53,6 +53,7 @@ each api is used on our weather dashboard along with notables.
             - Notify user with error code & error status in search input field
     - Use to get city's coordinates to then use in One Call API
     - Use to get list of citites for auto-complete feature on search for disambiguation
+    - NOTE: Server may be down without notice
 
 * One Call API - OpenWeatherMap
     - https://openweathermap.org/api/one-call-api
